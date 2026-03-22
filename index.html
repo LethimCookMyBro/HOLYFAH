@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevBoard Project Documentation</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            900: '#1e3a8a',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Sarabun', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Prism.js CSS (Okaidia Theme for Dark Code Blocks) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-twilight.min.css" rel="stylesheet" />
+    <style>
+        body { font-family: 'Inter', 'Sarabun', sans-serif; scroll-behavior: smooth; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        pre[class*="language-"] {
+            border-radius: 0.75rem;
+            margin: 1rem 0 2rem 0;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .nav-link.active {
+            background-color: #eff6ff;
+            color: #2563eb;
+            font-weight: 600;
+            border-right: 3px solid #3b82f6;
+        }
+        .content-section {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        .content-section.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Header -->
+    <header class="fixed top-0 w-full z-50 glass-panel border-b border-gray-200 shadow-sm h-16 flex items-center px-6">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
+                D
+            </div>
+            <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-purple-600">
+                DevBoard Documentation
+            </h1>
+        </div>
+        <div class="ml-auto flex items-center gap-4 text-sm text-gray-500 font-medium">
+            <span>คู่มือสำหรับการนำเสนอ (Presentation Guide)</span>
+        </div>
+    </header>
+
+    <div class="flex h-screen pt-16">
+        <!-- Sidebar Navigation -->
+        <aside class="w-72 fixed h-[calc(100vh-4rem)] overflow-y-auto border-r border-gray-200 bg-white shadow-sm pb-10">
+            <div class="p-5 font-semibold text-xs tracking-wider text-gray-400 uppercase">บทนำและภาพรวม</div>
+            <nav class="flex flex-col gap-1 px-3">
+                <button onclick="showSection('intro')" id="nav-intro" class="nav-link active text-left px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 transition-colors">1. ภาพรวมโปรเจกต์ (Intro)</button>
+            </nav>
+
+            <div class="p-5 font-semibold text-xs tracking-wider text-gray-400 uppercase mt-2">โครงสร้างหลัก (Core)</div>
+            <nav class="flex flex-col gap-1 px-3">
+                <button onclick="showSection('main-app')" id="nav-main-app" class="nav-link text-left px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 transition-colors">2. จุดเริ่มต้น (main & App)</button>
+                <button onclick="showSection('context')" id="nav-context" class="nav-link text-left px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 transition-colors">3. Context API (Favorites)</button>
+                <button onclick="showSection('hooks')" id="nav-hooks" class="nav-link text-left px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 transition-colors">4. Custom Hook (useFetch)</button>
+            </nav>
+
+            <div class="p-5 font-semibold text-xs tracking-wider text-gray-400 uppercase mt-2">ส่วนติดต่อผู้ใช้ (Pages/Components)</div>
+            <nav class="flex flex-col gap-1 px-3">
+                <button onclick="showSection('postlist')" id="nav-postlist" class="nav-link text-left px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 transition-colors">5. หน้าแสดงโพสต์ (PostList)</button>
+                <button onclick="showSection('navbar')" id="nav-navbar" class="nav-link text-left px-4 pl-8 py-2.5 rounded-md text-gray-500 hover:bg-gray-50 transition-colors text-sm">5.1 แถบเมนู (Navbar)</button>
+                <button onclick="showSection('post-components')" id="nav-post-components" class="nav-link text-left px-4 pl-8 py-2.5 rounded-md text-gray-500 hover:bg-gray-50 transition-colors text-sm">5.2 โพสต์ย่อย (PostCard)</button>
+                <button onclick="showSection('post-detail')" id="nav-post-detail" class="nav-link text-left px-4 pl-8 py-2.5 rounded-md text-gray-500 hover:bg-gray-50 transition-colors text-sm">5.3 หน้ารายละเอียด (Detail)</button>
+                <button onclick="showSection('favorites')" id="nav-favorites" class="nav-link text-left px-4 pl-8 py-2.5 rounded-md text-gray-500 hover:bg-gray-50 transition-colors text-sm">5.4 รายการโปรด (Favorites)</button>
+                <button onclick="showSection('search')" id="nav-search" class="nav-link text-left px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 transition-colors">6. ระบบค้นหา (SearchPage)</button>
+            </nav>
+
+            <div class="p-5 font-semibold text-xs tracking-wider text-gray-400 uppercase mt-2">สรุปจบและถาม-ตอบ</div>
+            <nav class="flex flex-col gap-1 px-3">
+                <button onclick="showSection('outro')" id="nav-outro" class="nav-link text-left px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 transition-colors">7. บทสรุป (Outro)</button>
+                <button onclick="showSection('qa-mock')" id="nav-qa-mock" class="nav-link text-left px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 transition-colors">8. แบบทดสอบจำลอง (50 ข้อ)</button>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="ml-72 flex-1 p-8 lg:p-12 h-full overflow-y-auto w-full bg-slate-50 relative pb-32">
+            <div class="max-w-4xl mx-auto">
+                
+                <!-- 1. Intro Section -->
+                <section id="intro" class="content-section active">
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 mb-8">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4 flex items-center gap-3">
+                            <span class="text-4xl">🎤</span> ภาพรวมโปรเจกต์ (Intro)
+                        </h2>
+                        <div class="prose max-w-none text-gray-600 text-lg leading-relaxed">
+                            <p class="mb-4"><strong>สคริปต์พูดแนะนำตัวโปรเจกต์:</strong></p>
+                            <div class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-lg italic text-blue-900 mb-6 font-medium">
+                                "สวัสดีครับ โปรเจกต์นี้คือ DevBoard เป็นเหมือนเว็บบอร์ดสำหรับนักพัฒนา สร้างด้วย React ครับ จุดเด่นคือเป็น Web App ที่หน้าเว็บทำงานแบบไร้รอยต่อ (Single Page Application - SPA) คือการเปลี่ยนหน้าหรือค้นหาข้อมูลจะไม่มีการรีเฟรชหรือโหลดหน้าใหม่เลย ข้อมูลทั้งหมดเราจำลองดึงมาจาก API (JSONPlaceholder) และมีระบบกดหัวใจ (Favorite) ที่รีเฟรชหน้าแล้วข้อมูลก็ยังอยู่ครับ"
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-800 mt-8 mb-4">จุดเด่นที่ควรเน้น (Key Features)</h3>
+                            <ul class="list-disc pl-6 space-y-2">
+                                <li><strong>Client-Side Routing:</strong> เปลี่ยนหน้าเร็วปรู๊ดปร๊าดผ่าน `react-router-dom`</li>
+                                <li><strong>Data Fetching:</strong> ดึงข้อมูลจาก External API กึ่งๆ Real-time เบื้องหลัง พร้อมสถานะ Loading/Error</li>
+                                <li><strong>Global State Management:</strong> จัดการข้อมูลที่ต้องใช้ร่วมกันหลายหน้าด้วย Context API</li>
+                                <li><strong>Data Persistence:</strong> เก็บข้อมูลไว้ใน Browser (LocalStorage) เพื่อไม่ให้หายตอนปิดหรือรีเฟรช</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. Main & App Section -->
+                <section id="main-app" class="content-section">
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 mb-8">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4 flex items-center gap-3">
+                            <span class="text-4xl">🚀</span> จุดเริ่มต้น (main.jsx & App.jsx)
+                        </h2>
+                        <div class="prose max-w-none text-gray-600 text-lg leading-relaxed mb-6">
+                            <p><strong>คำอธิบายสำหรับพรีเซนต์:</strong> "ตรงนี้เป็นจุดศูนย์รวมการทำงานของแอปครับ ไฟล์ `main.jsx` เป็นตัวเอา React ไปแปะลงบนหน้าเว็บ HTML ส่วนในไฟล์ `App.jsx` คือศูนย์กลางการจัดการ <strong>Route (เส้นทาง)</strong> สังเกตว่าเราครอบแอปทั้งหมดด้วย `<FavoritesProvider>` เพื่อให้ทุกๆ หน้าจดจำได้ว่าเรากดถูกใจโพสต์ไหนไปแล้วบ้าง และมี Route ต่างๆ สำหรับแต่ละเพจ"</p>
+                        </div>
+                        
+                        <h3 class="text-lg font-bold text-brand-600 bg-brand-50 inline-block px-3 py-1 rounded-md mb-2">📄 src/main.jsx</h3>
+                        <pre><code class="language-jsx">import React from "react";
+import ReactDOM from "react-dom/client"; 
+import App from "./App.jsx"; 
+import "./index.css"; 
+
+// ดึงแท็ก id="root" จากหน้า HTML มาเป็น Container สำหรับเรนเดอร์ React App ทั้งหมด
+ReactDOM.createRoot(document.getElementById("root")).render(
+  &lt;React.StrictMode&gt;
+    &lt;App /&gt; {/* เรียกใช้งานคอมโพเนนต์หลัก */}
+  &lt;/React.StrictMode&gt;
+);</code></pre>
+
+                        <h3 class="text-lg font-bold text-brand-600 bg-brand-50 inline-block px-3 py-1 rounded-md mt-6 mb-2">📄 src/App.jsx</h3>
+                        <pre><code class="language-jsx">import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { FavoritesProvider } from "./context/FavoritesContext";
+import Navbar from "./components/Navbar";
+import HomePage from "./pages/HomePage";
+import PostDetailPage from "./pages/PostDetailPage";
+// ... (import หน้าอื่นๆ)
+import NotFoundPage from "./pages/NotFoundPage";
+
+function App() {
+  return (
+    // ครอบ Components ทั้งหมดด้วย Provider เพื่อแชร์ State ไปทุกหน้า
+    &lt;FavoritesProvider&gt;
+      &lt;BrowserRouter&gt;
+        &lt;Navbar /&gt;
+        &lt;div className="container"&gt;
+          &lt;Routes&gt;
+            &lt;Route path="/" element={&lt;HomePage /&gt;} /&gt;
+            &lt;Route path="/posts/:id" element={&lt;PostDetailPage /&gt;} /&gt;
+            &lt;Route path="/search" element={&lt;SearchPage /&gt;} /&gt;
+            {/* โชว์หน้า 404 เมื่อ URL ไม่ตรงกับที่กำหนดไว้ทั้งหมด */}
+            &lt;Route path="*" element={&lt;NotFoundPage /&gt;} /&gt;
+          &lt;/Routes&gt;
+        &lt;/div&gt;
+      &lt;/BrowserRouter&gt;
+    &lt;/FavoritesProvider&gt;
+  );
+}</code></pre>
+                    </div>
+                </section>
+
+                <!-- 3. Context API Section -->
+                <section id="context" class="content-section">
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 mb-8">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4 flex items-center gap-3">
+                            <span class="text-4xl">❤️</span> Context API (FavoritesContext)
+                        </h2>
+                        <div class="prose max-w-none text-gray-600 text-lg leading-relaxed mb-6">
+                            <p><strong>คำอธิบายสำหรับพรีเซนต์:</strong> "ตรงนี้เป็นหัวใจของระบบ Favorite ครับ เราใช้ <strong>Context API</strong> คู่กับ <strong>localStorage</strong> (ความจำของเว็บบราวเซอร์) ข้อดีคือเวลาเปิดเว็บมา มันจะพยายามอ่านค่าที่เคยเซฟไว้ในเครื่องก่อนเสมอ และเราใช้ <code>useEffect</code> เป็นตัวคอยจับตาดูว่า ถ้าข้อมูล Favorites เปลี่ยนแปลง มันจะแอบเซฟลง <code>localStorage</code> อัตโนมัติเลยครับ มั่นใจได้ว่าข้อมูลไม่หายแน่นอน"</p>
+                        </div>
+                        
+                        <h3 class="text-lg font-bold text-brand-600 bg-brand-50 inline-block px-3 py-1 rounded-md mb-2">📄 src/context/FavoritesContext.jsx</h3>
+                        <pre><code class="language-jsx">import { createContext, useContext, useState, useEffect } from "react";
+
+// 1. สร้าง context object
+const FavoritesContext = createContext();
+
+// 2. Provider component — ครอบ App ทั้งหมด
+export function FavoritesProvider({ children }) {
+  // อ่านค่าเริ่มต้นจาก localStorage (เช็คตอนแอปโหลดครั้งแรก)
+  const [favorites, setFavorites] = useState(() =&gt; {
+    try {
+      const savedFavorites = localStorage.getItem('favorites');
+      return savedFavorites ? JSON.parse(savedFavorites) : [];
+    } catch (error) {
+      return [];
+    }
+  });
+
+  // Effect ทำงานทุกครั้งที่ state `favorites` มีการเปลี่ยนแปลง 
+  // มันจะ sync ข้อมูลบันทึกทับลง localStorage แบบอัตโนมัติ
+  useEffect(() =&gt; {
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+  }, [favorites]);
+
+  // ฟังก์ชันเอาไว้กดหัวใจ / เลิกกด
+  function toggleFavorite(postId) {
+    setFavorites((prev) =&gt;
+      prev.includes(postId)
+        ? prev.filter((id) =&gt; id !== postId) // มีอยู่แล้ว -> เอาออก
+        : [...prev, postId] // ยังไม่มี -> ใส่เพิ่มเข้าไป
+    );
+  }
+
+  return (
+    &lt;FavoritesContext.Provider value={{ favorites, toggleFavorite }}&gt;
+      {children}
+    &lt;/FavoritesContext.Provider&gt;
+  );
+}
+
+// 3. Custom hook ให้คนอื่นเรียกใช้ได้ง่ายๆ (ไม่ต้องส่ง Props)
+export function useFavorites() {
+  return useContext(FavoritesContext);
+}</code></pre>
+                    </div>
+                </section>
+
+                <!-- 4. Custom Hook -->
+                <section id="hooks" class="content-section">
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 mb-8">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4 flex items-center gap-3">
+                            <span class="text-4xl">🎣</span> Custom Hook (useFetch)
+                        </h2>
+                        <div class="prose max-w-none text-gray-600 text-lg leading-relaxed mb-6">
+                            <p><strong>คำอธิบายสำหรับพรีเซนต์:</strong> "อันนี้เป็น Custom Hook สไตล์เฉพาะตัวที่ผมสร้างแยกออกมาชื่อ <code>useFetch</code> ครับ จุดประสงค์คือลดความซ้ำซ้อนของโค้ด เพราะทุกเพจต้องดึงข้อมูลหมด เราจึงเอามารวมไว้ที่นี่ที่เดียว 它จะช่วยจัดการ 3 ตัวแปรหลักคือ: <strong>data (ข้อมูลที่ดึงได้), loading (สถานะวิ่งโหลด), error (ใช้ดักพัง)</strong> ทำให้ไฟล์อื่นๆ แค่พิมพ์บรรทัดเดียวก็ดึง API ได้แบบหล่อๆ เลยครับ"</p>
+                        </div>
+                        
+                        <h3 class="text-lg font-bold text-brand-600 bg-brand-50 inline-block px-3 py-1 rounded-md mb-2">📄 src/hooks/useFetch.js</h3>
+                        <pre><code class="language-jsx">import { useState, useEffect } from "react";
+
+// Hook ทำหน้าที่ดึงข้อมูลจาก API, จัดการโหลดและดักจับ Error
+function useFetch(url) {
+  const [data, setData] = useState(null); 
+  const [loading, setLoading] = useState(true); 
+  const [error, setError] = useState(null); 
+
+  // ฟังก์ชันสำหรับเรียก fetch ใหม่ (เพื่อใช้กับปุ่ม Reload ได้)
+  const refetch = async () =&gt; {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("เกิดข้อผิดพลาดในการดึงข้อมูล");
+      const result = await res.json();
+      setData(result); // เก็บข้อมูลลง state data
+    } catch (err) {
+      setError(err.message); // เก็บ error
+    } finally {
+      setLoading(false); // ปิดตัวหมุนๆ Loading
+    }
+  };
+
+  useEffect(() =&gt; {
+    // โหลดข้อมูลอัตโนมัติเมื่อ Component ทำหรือ url เปลี่ยน
+    refetch();
+  }, [url]);
+
+  return { data, loading, error, refetch };
+}
+
+export default useFetch;</code></pre>
+                    </div>
+                </section>
+
+                <!-- 5. PostList Section -->
+                <section id="postlist" class="content-section">
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 mb-8">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4 flex items-center gap-3">
+                            <span class="text-4xl">📰</span> หน้าแสดงโพสต์และแบ่งหน้า (PostList)
+                        </h2>
+                        <div class="prose max-w-none text-gray-600 text-lg leading-relaxed mb-6">
+                            <p><strong>คำอธิบายสำหรับพรีเซนต์:</strong> "นี่คือชิ้นส่วนหลักที่ใช้แสดงโพสต์ทั้งหมดครับ มี 3 ความสามารถย่อยอยู่ในตัวเลยคือ ระบบค้นหาแบบเรียลไทม์ (พิมพ์ปุ๊บหาปั๊บ), ปุ่มรีเฟรชข้อมูล, และ <strong>ระบบแบ่งหน้า (Pagination)</strong> สมมุติเราดึงข้อมูลมา 100 เรื่อง เราจะใช้คำสั่งหารจำนวนหน้า และใช้ฟังก์ชัน <code>.slice()</code> ของ JS เข้ามาหั่นอาร์เรย์มาโชว์แค่หน้าละ 10 เรื่องเท่านั้น เพื่อให้เบราว์เซอร์ไม่ค้างครับ"</p>
+                        </div>
+                        
+                        <h3 class="text-lg font-bold text-brand-600 bg-brand-50 inline-block px-3 py-1 rounded-md mb-2">📄 src/components/PostList.jsx</h3>
+                        <pre><code class="language-jsx">import { useState } from "react";
+import PostCard from "./PostCard";
+import LoadingSpinner from "./LoadingSpinner";
+import useFetch from "../hooks/useFetch";
+
+function PostList() {
+  // ดึงข้อมูลง่ายๆ ด้วย useFetch Hook ของเราเอง
+  const { data: posts, loading, error, refetch } = useFetch("https://jsonplaceholder.typicode.com/posts");
+  const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1); // เก็บหน้าปัจจุบัน
+
+  if (loading) return &lt;LoadingSpinner /&gt;;
+  if (error) return &lt;div&gt;เกิดข้อผิดพลาด: {error}&lt;/div&gt;;
+
+  // 1. กรองโพสต์จากคำค้นหา (ถ้ามี) แบบ case-insensitive
+  const filtered = posts ? posts.filter((post) =&gt;
+    post.title.toLowerCase().includes(search.toLowerCase()),
+  ) : [];
+
+  // 2. การแบ่งหน้า: แสดงหน้าละ 10 รายการ
+  const itemsPerPage = 10;
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  
+  // ตัด array เอาแค่โพสต์ในหน้าที่กำลังจะแสดง
+  const currentPosts = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  return (
+    &lt;div&gt;
+      {/* ส่วนหัว: ปุ่มรีโหลด */}
+      &lt;div&gt;
+        &lt;h2&gt;โพสต์ล่าสุด&lt;/h2&gt;
+        &lt;button onClick={() =&gt; { setCurrentPage(1); refetch(); }}&gt;
+          🔄 โหลดใหม่
+        &lt;/button&gt;
+      &lt;/div&gt;
+
+      {/* Input ช่องค้นหา */}
+      &lt;input
+        type="text"
+        placeholder="ค้นหาโพสต์..."
+        value={search}
+        onChange={(e) =&gt; {
+          setSearch(e.target.value);
+          setCurrentPage(1); // พิมพ์หาใหม่ ต้องเด้งกลับหน้าแรกเสมอ
+        }}
+      /&gt;
+
+      {/* วนลูปโชว์ PostCard ทีละอัน */}
+      {currentPosts.map((post) =&gt; (
+        &lt;PostCard key={post.id} post={post} /&gt;
+      ))}
+
+      {/* ส่วนควบคุมการแบ่งหน้า (Pagination) */}
+      &lt;div&gt;
+        &lt;button 
+          disabled={currentPage === 1}
+          onClick={() =&gt; setCurrentPage(prev =&gt; Math.max(prev - 1, 1))}
+        &gt; ← ก่อนหน้า &lt;/button&gt;
+        
+        &lt;span&gt;หน้า {currentPage} / {totalPages}&lt;/span&gt;
+        
+        &lt;button 
+          disabled={currentPage === totalPages}
+          onClick={() =&gt; setCurrentPage(prev =&gt; Math.min(prev + 1, totalPages))}
+        &gt; ถัดไป → &lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+                    </div>
+                </section>
+
+    <!-- 5.1 Navbar -->
+                <section id="navbar" class="content-section">
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 mb-8">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4 flex items-center gap-3">
+                            <span class="text-4xl">🧭</span> แถบเมนูนำทาง (Navbar)
+                        </h2>
+                        <div class="prose max-w-none text-gray-600 text-lg leading-relaxed mb-6">
+                            <p><strong>คำอธิบายสำหรับพรีเซนต์:</strong> "นี่คือแถบเมนูด้านบนที่ฝังอยู่ทุกหน้าครับ ความพิเศษคือเราดึง Context API มาใช้ เพื่อให้ตัวเลข (จำนวนโพสต์ที่กดถูกใจ) รันแบบเรียลไทม์ และเราใช้แท็ก <code>&lt;Link&gt;</code> ของ React Router แทนแท็ก <code>&lt;a&gt;</code> เพื่อไม่ให้หน้าเว็บโหลดกระพริบใหม่เวลาเปลี่ยนเมนูครับ"</p>
+                        </div>
+                        <h3 class="text-lg font-bold text-brand-600 bg-brand-50 inline-block px-3 py-1 rounded-md mb-2">📄 src/components/Navbar.jsx</h3>
+                        <pre><code class="language-jsx">import { Link } from "react-router-dom";
+import { useFavorites } from "../context/FavoritesContext";
+
+function Navbar() {
+  // ดึงข้อมูล favorites จาก Context มาเพื่อนับจำนวน (favorites.length)
+  const { favorites } = useFavorites();
+
+  return (
+    &lt;nav&gt;
+      &lt;Link to="/"&gt;&lt;h1&gt;DevBoard&lt;/h1&gt;&lt;/Link&gt;
+      &lt;div&gt;
+        &lt;Link to="/"&gt;หน้าหลัก&lt;/Link&gt;
+        &lt;Link to="/profile"&gt;สมาชิก&lt;/Link&gt;
+        &lt;Link to="/search"&gt;ค้นหา&lt;/Link&gt;
+        
+        {/* เมนูรายการโปรด: ถ้าโดนใจ > 0 ให้เปิดเรืองแสงสีแดง */}
+        &lt;Link to="/favorites" style={{ background: favorites.length &gt; 0 ? "#e53e3e" : "transparent" }}&gt;
+          ❤️ ถูกใจ {favorites.length &gt; 0 && `(${favorites.length})`}
+        &lt;/Link&gt;
+      &lt;/div&gt;
+    &lt;/nav&gt;
+  );
+}
+export default Navbar;</code></pre>
+                    </div>
+                </section>
+
+                <!-- 5.2 PostCard & CommentList -->
+                <section id="post-components" class="content-section">
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 mb-8">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4 flex items-center gap-3">
+                            <span class="text-4xl">💬</span> โพสต์ย่อย (PostCard & CommentList)
+                        </h2>
+                        <div class="prose max-w-none text-gray-600 text-lg leading-relaxed mb-6">
+                            <p><strong>คำอธิบายสำหรับพรีเซนต์:</strong> "โพสต์แต่ละอัน ถูกแยกออกมาเป็น <code>&lt;PostCard /&gt;</code> ครับ ไฮไลท์ของหน้านี้คือ <strong>ระบบ Lazy Fetching (การโหลดเมื่อจำเป็น)</strong> คอมเมนต์จะไม่ถูกดึงมาจากเน็ตเลยจนกว่าเราจะกดสั่ง 'ความเห็น' ระบบถึงจะดึง <code>&lt;CommentList /&gt;</code> ขึ้นมาทำงาน ช่วยลดภาระเซิร์ฟเวอร์มหาศาลครับ"</p>
+                        </div>
+                        <h3 class="text-lg font-bold text-brand-600 bg-brand-50 inline-block px-3 py-1 rounded-md mb-2">📄 src/components/PostCard.jsx</h3>
+                        <pre><code class="language-jsx">import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useFavorites } from "../context/FavoritesContext";
+import CommentList from "./CommentList";
+
+function PostCard({ post }) {
+  const { favorites, toggleFavorite } = useFavorites();
+  const isFavorite = favorites.includes(post.id); // เช็คว่าโพสต์นี้โดนกดไลก์รึย้ง
+
+  // State ควบคุมการเปิด/ปิดคอมเมนต์
+  const [showComments, setShowComments] = useState(false);
+
+  return (
+    &lt;div&gt;
+      &lt;h3&gt;&lt;Link to={`/posts/${post.id}`}&gt;{post.title}&lt;/Link&gt;&lt;/h3&gt;
+      &lt;p&gt;{post.body}&lt;/p&gt;
+
+      &lt;button onClick={() =&gt; toggleFavorite(post.id)}&gt;
+        {isFavorite ? "❤️" : "🤍"}
+      &lt;/button&gt;
+
+      {/* ควบคุม State เปิดหน้าต่างคอมเมนต์ */}
+      &lt;button onClick={() =&gt; setShowComments(!showComments)}&gt;
+        {showComments ? "▲ ซ่อน" : "▼ ความคิดเห็น"}
+      &lt;/button&gt;
+
+      {/* ถ้าแง้มดู (showComments = true) คอมโพเนนต์ถึงจะโหลดและเริ่มวิ่งดึง API */}
+      {showComments && &lt;CommentList postId={post.id} /&gt;}
+    &lt;/div&gt;
+  );
+}</code></pre>
+                        
+                        <h3 class="text-lg font-bold text-brand-600 bg-brand-50 inline-block px-3 py-1 rounded-md mt-6 mb-2">📄 src/components/CommentList.jsx</h3>
+                        <pre><code class="language-jsx">import { useState, useEffect } from "react";
+import LoadingSpinner from "./LoadingSpinner";
+
+function CommentList({ postId }) {
+  const [comments, setComments] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // ดึงข้อมูลคอมเม้นก็ต่อเมื่อมันถูกเรียกใช้งานขึ้นจอแล้วเท่านั้น (Lazy Loading)
+  useEffect(() =&gt; {
+    async function fetchComments() {
+      const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${postId}/comments`);
+      const data = await res.json();
+      setComments(data);
+      setLoading(false);
+    }
+    fetchComments();
+  }, [postId]); 
+
+  if (loading) return &lt;LoadingSpinner /&gt;;
+
+  return (
+    &lt;div&gt;
+      &lt;strong&gt;ความคิดเห็น ({comments.length})&lt;/strong&gt;
+      {comments.map((comment) =&gt; (
+        &lt;div key={comment.id}&gt;
+          &lt;div&gt;{comment.name}&lt;/div&gt;
+          &lt;div&gt;{comment.body}&lt;/div&gt;
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  );
+}</code></pre>
+                    </div>
+                </section>
+
+                <!-- 5.3 PostDetailPage -->
+                <section id="post-detail" class="content-section">
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 mb-8">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4 flex items-center gap-3">
+                            <span class="text-4xl">📄</span> หน้ารายละเอียดโพสต์ (PostDetailPage)
+                        </h2>
+                        <div class="prose max-w-none text-gray-600 text-lg leading-relaxed mb-6">
+                            <p><strong>คำอธิบายสำหรับพรีเซนต์:</strong> "เมื่อผู้ใช้คลิกเข้ามาเจาะลึกโพสต์ เราใช้ <code>useParams()</code> สกัดค่า ID ออกมาจาก URL (เช่น <code>/posts/3</code> ได้เลข 3) แล้วเอาเลขนี้ไปยิง API ขอข้อมูลเฉพาะกระทู้นั้นมาแสดงพร้อมคอมเมนต์ถาวรครับ"</p>
+                        </div>
+                        <h3 class="text-lg font-bold text-brand-600 bg-brand-50 inline-block px-3 py-1 rounded-md mb-2">📄 src/pages/PostDetailPage.jsx</h3>
+                        <pre><code class="language-jsx">import { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
+import { useFavorites } from "../context/FavoritesContext";
+import CommentList from "../components/CommentList";
+
+function PostDetailPage() {
+  // สกัดพารามิเตอร์ ID โพสต์จาก URL โดยตรง
+  const { id } = useParams(); 
+  const { favorites, toggleFavorite } = useFavorites();
+  
+  const [post, setPost] = useState(null);
+  useEffect(() =&gt; {
+    async function fetchPost() {
+      const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`);
+      const data = await res.json();
+      setPost(data);
+    }
+    fetchPost();
+  }, [id]); // ผูกติดชีวิตไว้กับ ID ลิ้งก์เปลี่ยน ให้ขยับดึงตัวใหม่
+
+  if (!post) return &lt;div&gt;กำลังโหลด...&lt;/div&gt;;
+  const isFavorite = favorites.includes(post.id);
+
+  return (
+    &lt;div&gt;
+      &lt;Link to="/"&gt;← กลับหน้าหลัก&lt;/Link&gt;
+      &lt;h2&gt;{post.title}&lt;/h2&gt;
+      &lt;p&gt;{post.body}&lt;/p&gt;
+
+      &lt;button onClick={() =&gt; toggleFavorite(post.id)}&gt;
+        {isFavorite ? "❤️ ถูกใจแล้ว" : "🤍 ถูกใจ"}
+      &lt;/button&gt;
+      
+      {/* หน้าเจาะลึก เราโชว์คอมเมนต์ถาวรเสมอไม่หด */}
+      &lt;CommentList postId={post.id} /&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+                    </div>
+                </section>
+
+                <!-- 5.4 FavoritesPage -->
+                <section id="favorites" class="content-section">
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 mb-8">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4 flex items-center gap-3">
+                            <span class="text-4xl">🌟</span> หน้ารวมรายการโปรด (FavoritesPage)
+                        </h2>
+                        <div class="prose max-w-none text-gray-600 text-lg leading-relaxed mb-6">
+                            <p><strong>คำอธิบายสำหรับพรีเซนต์:</strong> "หน้านี้ท้าทายมากครับ เพราะเรามีแต่ตัวเลข ID โพสต์ที่เซฟไว้ใน LocalStorage แต่ไม่มีข้อความโพสต์เลยท่าไม้ตายคือเราใช้ <code>Promise.all()</code> เข้ามาช่วยยิงสาด API พร้อมกันหลายๆ เส้นตามจำนวน ID ที่ถูกใจไว้ (ขบวนการดึงหมู่รวดเดียว) เพื่อเอามาประกอบร่างฝังโชว์ให้ในหน้านี้ครับ"</p>
+                        </div>
+                        <h3 class="text-lg font-bold text-brand-600 bg-brand-50 inline-block px-3 py-1 rounded-md mb-2">📄 src/pages/FavoritesPage.jsx</h3>
+                        <pre><code class="language-jsx">import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { useFavorites } from "../context/FavoritesContext";
+
+function FavoritesPage() {
+  // ดึงตะกร้า ID (เช่น [1, 3, 5]) ที่กดถูกใจไว้มาจากท่อ Context
+  const { favorites, toggleFavorite } = useFavorites();
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() =&gt; {
+    if (favorites.length === 0) return;
+
+    // ระบบขบวนการดึงหมู่ ยิง API ซ้อนกันพร้อมกันทุกตัวในถุง ID 
+    async function fetchFavoritePosts() {
+      const results = await Promise.all(
+        favorites.map((id) =&gt;
+          fetch(`https://jsonplaceholder.typicode.com/posts/${id}`).then((r) =&gt; r.json())
+        )
+      );
+      setPosts(results); // ได้ครบทุกตัวลงเสร็จสรรพ
+    }
+    fetchFavoritePosts();
+  }, [favorites]); 
+
+  if (favorites.length === 0) return &lt;p&gt;ยังไม่มีโพสต์ที่ถูกใจ&lt;/p&gt;;
+
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;❤️ โพสต์ที่ถูกใจ ({favorites.length})&lt;/h2&gt;
+      {posts.map((post) =&gt; (
+        &lt;div key={post.id}&gt;
+          &lt;h3&gt;{post.title}&lt;/h3&gt;
+          &lt;p&gt;{post.body}&lt;/p&gt;
+          &lt;button onClick={() =&gt; toggleFavorite(post.id)}&gt;
+            ❤️ ยกเลิกถูกใจ
+          &lt;/button&gt;
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  );
+}</code></pre>
+                    </div>
+                </section>
+
+                 <!-- 6. SearchPage Section -->
+                 <section id="search" class="content-section">
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 mb-8">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4 flex items-center gap-3">
+                            <span class="text-4xl">🔍</span> ระบบค้นหาด้วย URL Params (SearchPage)
+                        </h2>
+                        <div class="prose max-w-none text-gray-600 text-lg leading-relaxed mb-6">
+                            <p><strong>คำอธิบายสำหรับพรีเซนต์:</strong> "ที่หน้าค้นหาจังๆ ของเว็บ เราเปลี่ยนมาใช้ระบบ <strong>URL Search Params</strong> ครับ หมายความว่าเวลาเราพิมพ์หาคำว่า 'hello' ลิงก์เบราว์เซอร์จะเปลี่ยนเป็น <code>/search?q=hello</code> ข้อดีคือผู้ใช้สามารถก็อปลิงก์นี้ส่งให้เพื่อนกดเข้ามาดูผลลัพธ์แบบเดียวกันเป๊ะๆ ได้เลยครับ เป็นการค้นหาข้อมูลแบบ Advanced ที่เว็บบอร์ดใหญ่ๆ ใช้กัน"</p>
+                        </div>
+                        
+                        <h3 class="text-lg font-bold text-brand-600 bg-brand-50 inline-block px-3 py-1 rounded-md mb-2">📄 src/pages/SearchPage.jsx</h3>
+                        <pre><code class="language-jsx">import { useEffect, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+// (imports อื่นๆ ข้ามไปเพื่อความกระชับ)
+
+function SearchPage() {
+  // ดึงตัวจัดการ URL Params มาใช้ (?q=xxx)
+  const [searchParams, setSearchParams] = useSearchParams();
+  const query = (searchParams.get("q") || "").trim(); // อ่านค่า q จากโดเมน
+  const [searchInput, setSearchInput] = useState(query); // เก็บค่าที่กำลังพิมพ์
+  
+  const { data, loading, error } = useFetch("https://jsonplaceholder.typicode.com/posts");
+  const posts = data || [];
+
+  // เวลากดปุ่มค้นหา อัปเดต URL Param แทน
+  const handleSearch = (event) =&gt; {
+    event.preventDefault();
+    const trimmedQuery = searchInput.trim();
+    if (!trimmedQuery) {
+      setSearchParams({}); // ลบ param q ทิ้ง
+      return;
+    }
+    setSearchParams({ q: trimmedQuery }); // URL จะเปลี่ยนเป็น ?q=คำค้น
+  };
+
+  // กรองโพสต์จากสิ่งที่มีใน URL (?q=xxx) 
+  const filteredPosts = query
+    ? posts.filter((post) =&gt; {
+        const normalizedQuery = query.toLowerCase();
+        return (
+          post.title.toLowerCase().includes(normalizedQuery) ||
+          post.body.toLowerCase().includes(normalizedQuery)
+        );
+      })
+    : [];
+
+  return (
+    &lt;div&gt;
+      {/* ฟอร์มและช่องกรอก */}
+      &lt;form onSubmit={handleSearch}&gt;
+        &lt;input 
+          value={searchInput} 
+          onChange={(e) =&gt; setSearchInput(e.target.value)} 
+        /&gt;
+        &lt;button type="submit"&gt;ค้นหา&lt;/button&gt;
+      &lt;/form&gt;
+
+      {/* โชว์ผลการค้นหาตาม filteredPosts */}
+      {filteredPosts.map((post) =&gt; &lt;PostCard key={post.id} post={post} /&gt;)}
+    &lt;/div&gt;
+  )
+}</code></pre>
+                    </div>
+                </section>
+
+                <!-- 7. Outro Section -->
+                <section id="outro" class="content-section">
+                    <div class="bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-800 p-10 rounded-2xl shadow-lg border border-purple-700/30 mb-8 text-white">
+                        <h2 class="text-3xl font-bold mb-6 flex items-center gap-4">
+                            <span class="text-4xl shrink-0">✨</span> 
+                            <span>บทสรุปสำหรับจบการพรีเซนต์ (Outro)</span>
+                        </h2>
+                        
+                        <div class="bg-black/30 backdrop-blur-md rounded-xl p-8 border border-white/10 relative overflow-hidden">
+                            <div class="absolute -top-10 -right-10 w-32 h-32 bg-pink-500 rounded-full blur-3xl opacity-20"></div>
+                            <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-blue-500 rounded-full blur-3xl opacity-30"></div>
+                            
+                            <p class="text-xl leading-relaxed text-indigo-100 font-medium relative z-10 italic">
+                                "สรุปภาพรวมคือ โปรเจกต์นี้ไม่ได้มีเพียงแค่การยิงข้อมูลมาจาก API แล้วโชว์เฉยๆ ครับ แต่ผมเน้นการออกแบบระบบแบคเอนด์จำลองให้อ่านง่ายและการทำ <strong>UX (ประสบการณ์ผู้ใช้)</strong> ที่ดีด้วย 
+                                <br><br>
+                                เช่น การมีไอคอนวิ่งโหลด (Loading Spinner), การใช้ระบบ Lazy Fetching (ดึงคอมเมนต์เมื่อกดแท็บเท่านั้น เพื่อประหยัดเน็ตผู้ใช้) และสำคัญที่สุดคือการใช้ชิ้นส่วนที่ React มีให้ เช่น Context และ localStorage <b>มาผสมผสานกันเพื่อควบคุม State ไม่ให้พังแม้ออกแอปพลิเคชันไปแล้วครับ</b> ทั้งหมดนี้ทำให้ตัวเว็บแอปทำงานได้อย่างสมบูรณ์แบบ ขอบคุณสำหรับการรับฟังครับ!"
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 8. QA Mock Exam Section -->
+                <section id="qa-mock" class="content-section">
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 mb-8">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                            <span class="text-4xl">🎓</span> แนวข้อสอบ/คำถามสัมภาษณ์ (50 ข้อ)
+                        </h2>
+                        <div class="prose max-w-none text-gray-600 text-[1.05rem] leading-relaxed mb-6">
+                            <p class="mb-4 text-blue-800 bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 font-medium">
+                                "ชุดคำถามนี้ถูกวิเคราะห์มาจากหลักการระดับมหาวิทยาลัยที่อาจารย์มักจะถามเจาะลึกตอนตรวจโปรเจกต์ (Defense) โดยผมได้สรุปคำตอบให้สั้น กระชับ แถลงได้แบบดูฉลาดครับ"
+                            </p>
+
+                            <!-- หมวด 1 -->
+                            <h3 class="text-xl font-bold border-b-2 border-indigo-100 pb-2 mt-8 mb-4 text-indigo-800">📌 หมวด 1: พื้นฐาน React และ โครงสร้าง (1-5)</h3>
+                            <div class="space-y-4">
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">1. Q: SPA (Single Page Application) ในโปรเจกต์นี้คืออะไร แตกต่างจากเว็บสมัยก่อนยังไง?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> คือหน้าเว็บที่โหลดตัว HTML มาแค่ครั้งเดียว (ไฟล์เดียว) และใช้ JavaScript จำลองเปลี่ยนหน้าไปมาให้ความรู้สึกเหมือนเปลี่ยนหน้าเว็บโดยที่บราวเซอร์ไม่มีการโหลด/กระพริบจอเลยครับ</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">2. Q: ทำไมเราถึงต้องเอาแท็ก <code>&lt;BrowserRouter&gt;</code> ไปครอบตัว App ทั้งหมด?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> เพื่อเปิดใช้งานระบบ Client-Side Routing ของ `react-router-dom` ทำให้ตัวเว็บฝั่งเบราว์เซอร์อ่านค่า URL และประมวลผลเปลี่ยน Component ได้ถูกพาธโดยไม่ต้องไปขอข้อมูลจากเซิร์ฟเวอร์หลังบ้านครับ</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">3. Q: ฟังก์ชันไลบรารี <code>React.StrictMode</code> ในไฟล์ main ช่วยเรื่องอะไร?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> มันเป็นเครื่องมือตรวจสอบโค้ดแบบเข้มงวดของ React ครับ มันจะแอบรัน Component ของเราเบิ้ล 2 รอบแบบเงียบๆ ระหว่างช่วงที่กำลังเขียนโค้ด (Dev) เพื่อช่วยตรวจหา Side-effect หรือแจ้งเตือนสิ่งผิดปกติครับ</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">4. Q: ไฟล์ <code>index.html</code> แทบไม่มีโค้ดอะไรเลย แล้วหน้าเว็บทั้งหมดทำงานตรงไหน?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> มันทำหน้าที่เป็นกระดานเปล่าครับ มีแค่แท็ก <code>&lt;div id="root"&gt;&lt;/div&gt;</code> เพื่อให้ JavaScript (React) เป็นตัวสร้างชิ้นส่วน UI แล้วนำไป 'ฝัง (Render)' ในกล่อง root กล่องนี้แทนครับ</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">5. Q: อะไรคือ Component อธิบายในภาษาของโปรเจกต์นี้?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> คือการเอาชิ้นส่วนความสามารถต่างๆ มาเขียนทอนให้เป็นฟังก์ชันเพื่อเอากลับมา "ใช้ซ้ำ" ครับ เช่น <code>&lt;PostCard /&gt;</code> ที่เอามาเขียนวนลูปไม่ต้องพิมพ์โครง HTML ยาวเฟื้อยซ้ำทุกกระทู้ครับ</p>
+                                </div>
+                            </div>
+
+                            <!-- หมวด 2 -->
+                            <h3 class="text-xl font-bold border-b-2 border-indigo-100 pb-2 mt-8 mb-4 text-indigo-800">📌 หมวด 2: ระบบเชื่อมโยง (Routing & Params) (6-11)</h3>
+                            <div class="space-y-4">
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">6. Q: เครื่องหมายดอกจัน ในเส้นทาง <code>&lt;Route path="*" .../&gt;</code> มีการทำงานยังไง?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> ใช้ดักจับเงื่อนไขอื่นๆ ทั้งหมด (Catch-all) หมายความว่าถ้าผู้ใช้พิมพ์ URL ยึกยือที่ไม่ตรงกับเส้นทางใดๆ ข้างบนเลย ตัวนี้จะทำงานและพาไปหน้า "404 Not Found" ครับ</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">7. Q: <code>path="/posts/:id"</code> ตัว <code>:id</code> เอาไปทำอะไร?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> มันคือ Dynamic Segment ครับ ใช้เป็นตัวแปรรับค่าทาง URL เช่นเข้าลิ้งก์ <code>/posts/123</code> โค้ดหน้าแสดงข้อมูลกระทู้ก็จะดูดค่า 123 ออกมายิงขอข้อมูลต่อครับ</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">8. Q: <code>useParams()</code> แตกต่างจาก <code>useSearchParams()</code> อย่างไร?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> <code>useParams()</code> เอาไว้ดึงตัวแปรที่แฝงมาตามเส้นทางหลัก (เช่นจาก /posts/123 ดึง 123) ส่วน <code>useSearchParams()</code> เอาไว้ดึง Query ต่อท้ายหลังเครื่องหมาย ? (เช่น ?q=คำค้น ดึง คำค้น มา) ครับ</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">9. Q: ทำไมหน้าค้นหาเว็บเราถึงใช้ SearchParams แทนที่จะเก็บตัวแปรบ้านๆ ด้วย `useState`</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> ข้อได้เปรียบใหญ่ที่สุดคือ ผู้ใช้สามารถไฮไลท์ก๊อปปี้ลิงก์ที่เห็นไปส่งให้เพื่อน แล้วเพื่อนเปิดมาก็จะเห็นคีย์เวิร์ดการค้นเดียวกันเป๊ะๆ ครับ</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">10. Q: การเปลี่ยนแท็ก `&lt;a href="..."&gt;` คลาสสิกเป็นตัว <code>&lt;Link to="..."&gt;</code> มีผลอย่างไร?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> แท็ก <code>&lt;a&gt;</code> จะสั่งให้เบราว์เซอร์เริ่มโหลดหน้าเว็บใหม่ทั้งหมด แต่ <code>&lt;Link&gt;</code> จะขัดขวางจังหวะนั้น (prevent default) และสับเปลี่ยนคอมโพเนนต์ให้ทันที เพื่อไม่ให้เสียความลื่นของ SPA ครับ</p>
+                                </div>
+                            </div>
+
+                            <!-- หมวด 3 -->
+                            <h3 class="text-xl font-bold border-b-2 border-indigo-100 pb-2 mt-8 mb-4 text-indigo-800">📌 หมวด 3: Hooks ขั้นพื้นฐาน (useState & useEffect) (11-15)</h3>
+                            <div class="space-y-4">
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">11. Q: `useState` สำคัญอย่างไร แล้วต่างจากตัวแปรปกติ <code>let x = 1</code> ยังไง?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> ตัวแปรปกติเวลามันเปลี่ยนค่า โค้ด HTML บนจอจะไม่ถูกอัปเดตครับ แต่ถ้าใช้ <code>useState</code> เมื่อค่าเปลี่ยนแปลง React จะสั่งให้จอตรงนั้น <b>Re-render (วาดจอใหม่)</b> ทันทีให้ตรงกันเป๊ะ</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">12. Q: <code>useEffect</code> ใช้เมื่อไร หลักการคืออะไร?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> เอาไว้เขียนโค้ด "จังหวะและเวลา" ให้ทำงานนอกเหนือรีแรนเดอร์ เช่น จะให้ดึง API ทันทีช่วงที่ส่วนนี้ถูกแปะขึ้นจอคอม (Mounting) หรืออัพเดตค่าบางอย่างเมื่อตัวแปรเปลี่ยน</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">13. Q: ทำไมต่อท้าย <code>useEffect(..., [])</code> เล็บอาร์เรย์จึงถูกเว้นไว้ว่างๆ?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> นี่คือ Dependency Array ว่างเปล่า เป็นสัญลักษณ์บอกโปรแกรมว่า "รันโค้ดข้างในนี้แค่ ครั้งแรก ครั้งเดียวเท่านั้น นะ" ไม่ต้องทำซ้ำ</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">14. Q: ถ้าเราลืมใส่วงเล็บอาร์เรย์ ต่อท้าย <code>useEffect</code> จะส่งผลเสียไหม?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> มันจะส่งผลเสียอย่างหนักครับ มันจะถูกรันใหม่(ทำงาน) ทุกครั้งที่หน้าจอกระพริบวาดใหม่ ถ้ายิ่งข้างในมีโค้ดยิง API อยู่ เบราว์เซอร์อาจจะเกิด <b>Infinite Loop (รันอนันต์)</b> แล้วค้างได้</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">15. Q: ในระบบ Favorites... เราใส่ <code>[favorites]</code> ตัวเบอเร่อในวงเล็บอาร์เรย์ useEffect เพื่ออะไร?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> เพื่อตั้งกล้องวงจรปิดจับตาดู state ชื่อว่า favorites ครับ เมื่อไรก็ตามที่คนใช้งานกดไลก์ ทำให้ state favorites เพิ่ม/ลด มันก็จะเรียกโค้ดข้างในทำงานซึ่งก็คือ เอาไปจดใส่สมุด localStorage ครับ</p>
+                                </div>
+                            </div>
+
+                            <!-- หมวด 4 -->
+                            <h3 class="text-xl font-bold border-b-2 border-indigo-100 pb-2 mt-8 mb-4 text-indigo-800">📌 หมวด 4: Custom Hooks & การดึงข้อมูล API (16-20)</h3>
+                            <div class="space-y-4">
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">16. Q: เราจะแยกไปสร้าง <code>useFetch</code> ใหม่ทำไมสู้ใช้ fetch สดๆ ในโพสต์เลยไม่ได้หรือ?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> ได้ครับ แต่ไม่ดี เพราะแอปเราต้องโหลดรายชื่อคน โหลดกระทู้ โหลดคอมเมนต์ ถ้าทำแบบนั้นเราจะต้องพิมพ์สคริปต์ยาวๆ โหลดข้อมูลตั้งค่า loading วนไปซ้ำๆ สู้ทำ Hook สั้นๆ 1 บรรทัดครอบเลยดีกว่า โค้ดคลีนด้วย</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">17. Q: ตอนทำดึง API ทำไมต้องมีสถานะว่า <code>loading: true/false</code></p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> เพราะอินเตอร์เน็ตมีดีเลย์ (Asynchronous) เราควรมีตัวแปรช่วยใบ้บอก UI ให้มันโชว์สถานะ "กำลังโหลด" ป้องกันผู้ใช้สับสนและกันสแปมคลิก</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">18. Q: ถ้าเน็ตกระตุก เซิร์ฟเวอร์ล่ม ทำยังไงไม่ให้หน้าขาว (App Crash)?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> เราใช้บล็อกไม้ตายชื่อ <code>try...catch</code> เข้ามาครอบการดึงข้อมูลครับ ถ้ายิงขอข้อมูลแล้วมีปัญหา โค้ดจะเด้งไปเข้า catch ทันทีและจับ error เก็บมาแสดงแจ้งเตือนยูสเซอร์แทน</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">19. Q: บล็อก <code>finally {}</code> ใน useFetch ของโปรเจกต์เรามีหน้าที่หลักคือ?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> คือจุดปิดฉากครับ "ไม่ว่าการโหลดนั้นจะสำเร็จดั่งใจ หรือ ล้มเหลวบรรลัย" โปรแกรมก็จะมาเรียก <code>setLoading(false)</code> เพื่อนำไอคอนโหลดหมุนๆ ปิดลงไปให้จบงานครับ</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">20. Q: ฟังก์ชันคำว่า <code>async / await</code> ใน JavaScript หมายความว่าอะไร?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> มันเป็นคู่หูร่ายเวทมนตร์บอกให้คำสั่งนี้คือฟังก์ชัน "รอฉันก่อน (Asynchronous)" ครับ ทำให้ JavaScript ไม่ข้ามบรรทัดไปทำงานลงไปเรื่อยๆ จนกว่าคำสั่ง <code>fetch</code> จะสูบข้อมูลมาเสร็จครับ</p>
+                                </div>
+                            </div>
+
+                            <!-- หมวด 5 -->
+                            <h3 class="text-xl font-bold border-b-2 border-indigo-100 pb-2 mt-8 mb-4 text-indigo-800">📌 หมวด 5: Context API และ Local Storage (21-25)</h3>
+                            <div class="space-y-4">
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">21. Q: ปัญหา Prop-Drilling ของ React แปลกๆ ที่ <code>Context API</code> ถูกสร้างมาเพื่อฆ่ามันคืออะไร?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> Prop-Drilling คือการโยนข้อมูลส่งต่อทอดไปเรื่อยๆ ตาม Component ลูกหลานเป็นชั้นๆ ซึ่งวุ่นวาย Context API จึงถูกส่งลงมาทำตัวเป็น <b>รถสูบส้วม (ท่อข้อมูลส่วนกลาง)</b> เพื่อให้ตัวลูกไม่ว่าจะลึกกี่ชั้นก็ดูดค่าจาก Context เดียวนั้นมาใช้ได้เลยครับ</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">22. Q: ทำไมระบบ "หัวใจ (Favorites)" ต้องใช้เทคนิค LocalStorage ทำไมตัวแปรปกติถึงเอาไม่อยู่?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> เพราะเวลาผู้ใช้รีเฟรชหน้า (F5) หรือออกเบราว์เซอร์แล้วกลับมาใหม่ ตัวแปร State ทั้งหมดจะถูกลบเกลี้ยงเป็น 0 หมด LocalStorage ซึ่งเป็นฐานข้อมูลเบาๆ ฝังในบราวเซอร์จะติดแน่นอยู่ได้แม้ปิดคอมครับ</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">23. Q: ทำไมถึงดันทุรังใช้ <code>JSON.stringify</code> ก่อนบันทึกข้อมูล Array รายชื่อโพสต์คนกดไลก์?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> เพราะว่ากฎหมายของ LocalStorage บังคับว่า <b>ห้ามเก็บข้อมูลรูปแบบอื่น ยกเว้น ตัวหนังสือก้อนเดียว (String)</b> เราจึงต้องซิกแซกจับโครงสร้าง Array/Object แปลงเป็นข้อความก่อน</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">24. Q: เมื่อมี Stringify ก็ย่อมมี <code>JSON.parse</code> มันทำอะไรให้เราบ้างตอนโหลดแอป?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> มันทำแปรสภาพกลับครับ โดยมันจะอ่านตัวหนังสือยาวๆ จาก LocalStorage คืนชีพกลับมาเป็น Array จริงๆ ให้ React นำไปใช้งานดึงโพสต่อได้ทันทีครับ</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">25. Q: "Provider" ใน Context คือคนจ่าย หรือผู้ให้ มันจ่ายอะไรให้ใครกันแน่?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> จ่ายข้อมูลให้บรรดา Components ลูกทั้งหมดที่อยู่ภายใต้วงแขนมัน (ในไฟล์ App.jsx จะเห็นมันตั้งตระหง่านครอบ Navbar และ Routes) ทำให้ทุกหน้าได้สิทธิ์รับข้อมูลและอัพเดตกดหัวใจกันสบายๆ</p>
+                                </div>
+                            </div>
+
+                            <!-- หมวด 6 -->
+                            <h3 class="text-xl font-bold border-b-2 border-indigo-100 pb-2 mt-8 mb-4 text-indigo-800">📌 หมวด 6: เทคนิคเฉพาะ (Pagination & Searching) (26-30)</h3>
+                            <div class="space-y-4">
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">26. Q: ระบบหน้า Pagination เราใช้ท่าอะไรแบ่งกระบะข้อมูล มีการยิง API ถี่ๆ ตามจำนวนหน้าไหม?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> ไม่ครับ เรายิงรวดเดียว 100 โพสเก็บใส่ตัวแปร แล้วใช้ท่า Client-side Pagination ด้วยตำสั่ง <code>.slice()</code> ของอาร์เรย์มาหั่นข้อมูลเฉพาะ 10 ตัวที่อยู่ในหน้านั้นออกมาโชว์ครับ</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">27. Q: สมการหาหน้า ทำไมตัวเลขต้องสวมคำสั่ง <code>Math.ceil()</code> เข้าไป?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> ตัวนี้สำคัญมากครับ มันคือการสั่ง "ปัดเศษขึ้น" ไม่งั้นถ้าเรามีข้อมูล 23 โพสต์ โชว์หน้าละ 10 มันจะหารได้ 2.3 ทำให้ 3 โพสต์ท้ายตกหล่นหายเข้ากลีบเมฆ เมื่อถูกปัดขึ้นก็จะกลายเป็น 3 หน้าพอดีครับ</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">28. Q: การทำ "Lazy Fetching" กับ Comment มันช่วยโปรเจกต์นี้ตรงไหน?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> เป็นการเขียนเงื่อนไขผูกให้ระบบทำงานโหลดคอมเมนต์ <b>ก็ต่อเมื่อผู้ใช้ไปกดปุ่มกางแท็บดูเท่านั้น</b> เราไม่ได้ผูกดึงรวบแต่ทีแรก ช่วยถนอมแบนด์วิดท์เซิร์ฟเวอร์แบบสุดโต่งและสปีดโหลดของเว็ปอย่างมาก</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">29. Q: ระบบค้นหาที่ทำด้วย <code>.filter()</code> ต้องใส่คำสั่ง `.toLowerCase()` แทรกทุกๆ ที่เพื่อเหตุผลกลใด?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> เพื่อทำ <b>Case-insensitive Search</b> ครับ ทำให้แม้ว่าผู้ใช้พิมพ์ตัวพิมพ์เล็ก (a) แต่ในฐานข้อมูลเป็นพิมพ์ใหญ่ (A) ก็ยังตีความได้ว่ามันเข้ากัน เจอและแมตช์ได้ 100%</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">30. Q: จากที่ทำ 67160003 DevBoard ขึ้นมา จุดแข็งที่สุด และความลับที่คนนอกไม่ค่อยรู้อย่างหนึ่งคือการจัดการ State ที่คุณภูมิใจคืออะไร?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> นี่คือไม้ตายสุดท้าย! ความลับคือการรวมเอา 3 เรื่องอย่าง <strong>Custom Hook ลดความน่าปวดหัวของ API</strong> ผนวกเข้ากับ <strong>Context API</strong> และผสานเข้าเบราเซอร์อย่าง <strong>LocalStorage</strong> โค้ดทั้งหมดจะโยงใยเชื่อมถึงกันได้สมบูรณ์ และทำให้เว็บนี้ไม่ต้องพึ่งพาเซิรชเอนจิ้นหลังบ้านแพงๆ เลยครับ!</p>
+                                </div>
+                            </div>
+
+                            <!-- หมวด 7 -->
+                            <h3 class="text-xl font-bold border-b-2 border-indigo-100 pb-2 mt-8 mb-4 text-indigo-800">📌 หมวด 7: รูปแบบการทำงานและการเรนเดอร์ (React Lifecycle) (31-35)</h3>
+                            <div class="space-y-4">
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">31. Q: ทำไมใส่ setState ในตัว Component โดยตรง (นอก useEffect หรือฟังก์ชัน Event) ถึงทำให้เว็บค้าง?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> เพราะมันจะเกิด Infinite Loop (วนลูปนรก) พอโหลดมาเจอคำสั่งเซ็ต State -> ค่าเปลี่ยน -> จออัปเดตเริ่มต้นพ่นโค้ดใหม่ -> เจอคำสั่งเซ็ต State อีก -> จออัปเดต วนไปเรื่อยๆ จนเบราว์เซอร์รับไม่ไหวครับ</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">32. Q: เวลาเอา Array มา <code>.map()</code> สร้าง Component วนลูป ทำไมต้องใส่ <code>key</code> ถ้าไม่ใส่จะมีผลอะไร?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> <code>key</code> เป็นเหมือนบัตรประจำตัวประชาชนให้ React รู้ว่าชิ้นไหนคือชิ้นไหน ถ้ามียูสเซอร์ลบโพสต์อันที่สองออก React จะได้หันไปลบถูกชิ้น ไม่ต้องพังกระดานเคลียร์วาดใหม่ทั้งหมดให้หนักเครื่องครับ</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">33. Q: ทำไมในโปรเจกต์นี้ถึงใช้ <code>key={post.id}</code> แทนที่จะใช้ <code>key={index}</code> (ลำดับการวนลูป 0,1,2...)?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> เพราะลำดับ index เปลี่ยนแปลงได้ตลอดเวลาถ้าข้อมูลถูกขยับหรือลบทิ้ง ทำให้หน้าตาและการอัปเดต UI ผิดเพี้ยน การใช้ ID ของฐานข้อมูลที่เป็น Unique ตายตัวจะลบจุดอ่อนนี้ 100%</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">34. Q: คำที่สายโปรแกรมเมอร์เรียกว่า "Component Mount" มีความหมายว่าอะไร?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> คือวินาทีแรกสุดที่ชิ้นส่วนคอมโพเนนต์นั้น "ถูกนำมาปูวางแปะลงบนหน้าจอ" ซึ่งเป็นเวลาทองที่เราต้องเขียน <code>useEffect</code> สั่งดึง API เตรียมของให้พร้อมใช้งานครับ</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">35. Q: Virtual DOM ที่เขาบอกว่าเป็นจุดแข็งของ React คืออะไร?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> มันคือร่างโคลนนิ่งของหน้าจอที่ React แอบจำลองไว้ในแบ็คกราวน์ เวลาสั่งเเก้เไข มันจะแก้ในร่างโคลนแล้วเอามาเทียบกับจอจริง ถัดมาจะจิ้มแก้ไข "เฉพาะจุดย่อยนิดเดียว" ที่เปลี่ยนไปจริงๆ ทำให้เว็บลื่นไหลไม่กระตุกครับ</p>
+                                </div>
+                            </div>
+
+                            <!-- หมวด 8 -->
+                            <h3 class="text-xl font-bold border-b-2 border-indigo-100 pb-2 mt-8 mb-4 text-indigo-800">📌 หมวด 8: ประสบการณ์ผู้ใช้และการประมวลผล (UI/UX) (36-40)</h3>
+                            <div class="space-y-4">
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">36. Q: ในการเขียน UI ของ React ทำไมถึงห้ามใช้ <code>class="btn"</code> เหมือนที่เคยเรียนมา แล้วต้องมาพิมพ์ <code>className="btn"</code> แทนตลอด?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> เพราะคำว่า <code>class</code> มันดันบังเอิญไปซ้ำกับคำสงวน (Reserved Word) ของภาษา JavaScript ที่เอาไว้สร้าง Class OOP พอดีครับ กฎหมู่ออกแบบเลยบังคับให้หนีไปใช้ className แทนครับ</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">37. Q: การทำหน้าดักทาง <code>&lt;NotFoundPage /&gt;</code> (โชว์เตือน 404) สำคัญยังไงต่อคะแนน UX?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> ถ้าไม่ทำกรงดักไว้ เวลา user พิมพ์ URL มั่วซั่วหรือลิงก์เก่าตาย จะเจอจอเบราว์เซอร์สีขาวแหงก (หรือหน้า Default โง่ๆ) ตกใจกลัวปิดหนีเบย การดัก 404 สุภาพๆ พร้อมปุ่มโยนกลับหน้าแรก เป็นการดูแลจิตใจคนใช้ครับ</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">38. Q: ไอคอน Loading Spinner วงกลมหมุนๆ ทำไมถึงหมุนได้ลื่นปรื้ดทั้งที่เวลาดึง API เครื่องมักจะกระตุกค้าง?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> เป็นการแยกสมองการทำงานครับ! สปินเนอร์เราโหลดด้วยอนิเมชั่นของ CSS <code>@keyframes</code> โดยตรง การ์ดจอรับเหมาไปทำ เลยไม่สะทกสะท้านกับสมองหลัก (Main Thread JavaScript) ที่ฝืนกำลังดึงข้อมูลข้ามทวีปครับ</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">39. Q: เวลากดปุ่ม Favorite ทำไมหัวใจถึงแดงเปล่งประกายขึ้นมาทันที ไม่ต้องโหลดงึกๆ งักๆ แลกข้อมูลกับเซิร์ฟเวอร์?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> เพราะการเปลี่ยนสีไอคอนถูกควบคุมด้วย Local State ระดับไคลเอนต์ครับ พอกดคลิก เราอัปเดตทาสีในฝั่งหน้าเว็บทันทีในเสี้ยววิ (Optimistic UI Approach) แล้วเบื้องหลังค่อยแอบไปเซฟให้เงียบๆ</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">40. Q: การแตกโครงสร้างออกมาเป็น Components เล็กๆ เอาเป็นเอาตายแบบนี้ มันดีกว่าเขียนรวมในก้อนเดียวหรอ?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> ลดการกระเพื่อมครับ! ถ้ารวมกัน พอฟิลเตอร์คีย์เวิร์ดเดียวหน้าเว็ปทั้งหมดพันแถวจะรีแรนเดอร์กระพริบใหม่ทั้งหมด ทรัพยากรหมดเกลี้ยง ถ้าเรายิ่งซอยย่อย การอัปเดตก็จะเกิดเฉพาะปะทะในกล่องเล็กๆ แค่กล่องเดียว</p>
+                                </div>
+                            </div>
+
+                            <!-- หมวด 9 -->
+                            <h3 class="text-xl font-bold border-b-2 border-indigo-100 pb-2 mt-8 mb-4 text-indigo-800">📌 หมวด 9: ควบคุม JavaScript ขั้นสูงเสมือน React (41-45)</h3>
+                            <div class="space-y-4">
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">41. Q: ลูกศรเก๋ๆ <code>=&gt;</code> (Arrow Function) ที่ใช้ทั้งโปรเจกต์นอกจากสั้นแล้ว ดีกว่า <code>function</code> แบบเก่าตรงไหน?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> โคตรวิเศษตรงที่มันไม่มีทิศทางของคำว่า <code>this</code> เป็นของตัวเองครับ มันจะสืบทอดสายเลือด this มาจาก Component ที่ห่อหุ้มมัน ทำให้การเรียกตัวแปรไปมาไม่ผิดเพี้ยนเลย</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">42. Q: ทำไมหน้าค้นหา(Search) เราถึงควัก <code>.filter()</code> มาใช้แทนที่จะใช้ <code>.map()</code> ธรรมดา?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> <code>.map()</code> คือการแปรรูป (เช่น โยนแป้งไป 10 ก้อน ได้ขนมปังหน้าตาใหม่ 10 ก้อน) แต่ <code>.filter()</code> คือการเอาร่อนตะแกรง ดึงขยะทิ้ง โยนสิบก้อนอาจจะได้ออกมารอดการค้นหาแค่ 2 อันครับ</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">43. Q: เครื่องหมายจุดสามจุด <code>...prev</code> (Spread Operator) ตอนใช้ setFavorites มีคุณงามความดีคืออะไร?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> คุณสมบัติกางตำราแผ่ครับ! มันคือการระเบิดอาเรย์เก่าที่เคยกดไลก์ไว้ กระจายมาปูพื้นเรียงไว้ก่อน แล้วค่อยหยิบไอเท็มดวงใหม่ไปประกบท้าย ทำให้ข้อมูลของเด่าที่เรารักไม่สูญหายไปไหนครับ</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">44. Q: <code>const posts = data || []</code> ไอ้เส้นตั้ง 2 เส้นคู่กันเอาไว้ทำเพื่ออะไร?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> มันเป็นเทคนิค "เตียงสำรอง (Fallback)" ครับ สมมุติยิง API ยังไม่เสร็จ data จะเป็นก้อนอากาศเน่า (null) ถ้า React เอาไปเข้าเครื่องปั่นมันจะงงและพัง เราเลยดักทิศว่า ถ้าเน่า ให้ดึง <code>[]</code> (กล่องเปล่า) ไปใช้แทนพลางๆ ก่อน</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">45. Q: รูปประโยคจังๆ แบบ <code>{ error ? &lt;ErrorMsg /&gt; : &lt;DataScreen /&gt; }</code> ใน React เรียกว่าอะไร?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> มันคือ <strong>Ternary Operator</strong> (เงื่อนไข If-Else ฉบับย่อ) คือถ้าจริงเเบะซ้าย (หลัง '?') ถ้าโกหกเบียดขาว (หลัง ':') ซึ่งเป็นท่าไม้ตายในการสลับหน้าจอ UI สวรรค์หรือนรกของคนเขียน React ทั่วโลกครับ</p>
+                                </div>
+                            </div>
+
+                            <!-- หมวด 10 -->
+                            <h3 class="text-xl font-bold border-b-2 border-indigo-100 pb-2 mt-8 mb-4 text-indigo-800">📌 หมวด 10: การเตรียมแพคเก็จพร้อมวางขาย (Architecture & Deployment) (46-50)</h3>
+                            <div class="space-y-4">
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">46. Q: โฟลเดอร์มหึมา <code>node_modules</code> หนักเป็นกิ๊ก ทำไมเวลาส่งงานอาจารย์ หรือดันโค้ดขึ้น GitHub เราถึงต้องบลานซ์ลบมันเสมอก่อน?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> เพราะเราสามารถร่ายคาถาสั่ง <code>npm install</code> ชุบชีวิตเสกมันกลับมาครบทุกหยดได้เลยแบบอัตโนมัติ โดยอิงทะเบียนประวัติจาก <code>package.json</code> การนำขยะขึ้น Git จึงเป็นเรื่องน่าอับอายขายขี้หน้าครับ</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">47. Q: สิ่งมีชีวิตที่เรียกว่า `package.json` เป็นหัวใจตรงไหน?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> เป็นศูนย์บัญชาการครับ เก็บชื่อโปรเจค เก็บรายชื่ออาวุธ(เครื่องมือ/ไลบรารี่)ทั้งหมดที่ใช้ในเว็ป และเก็บโค้ดเส้นทางลัด (scripts) ว่าถ้าจะรันเข้าเซิฟหลักต้องพิมพ์อะไร</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">48. Q: คุณเอาสิ่งที่เขียนในไฟล์รหัสประหลาด <code>.jsx</code> ไปเปิดใน Google Chrome มันจะรันขึ้นมาสวยๆ ขย้ำได้เลยไหม?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> <b>พังยับเยินจ้า!</b> โครมและเบราว์เซอร์ทุกเจ้าไม่มีใครอ่าน jsx เข้าใจเลยครับ มันจึงต้องมีตัวแปลภาษา (เช่น Vite+Babel) ดูดข้อความแปลกๆ บีบรัดเป็น JavaScript ออริจินัลนัวๆ ให้เบราว์เซอร์สูบดมครับ</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">49. Q: โปรเจกต์นี้เริ่มต้นด้วยเครื่องทุ่นเเรง Vite มันดีกว่าชาวบ้านชาวช่อง (เช่น Create React App เดิม) อย่างไร?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> Vite ดีเลิศประเสริฐสุดเพราะ "เร็วทะลุขอบนรก" ครับ มันรีดโค้ดเปลี่ยนเฉพาะก้อนที่แก้ไขเบ็ดเสร็จในเสี้ยววินาที ไม่ต้องปิงประมวลผลวาดโปรเจกต์ใหม่ทุกครั้งเหมือนเครื่องยุคหินครับ</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <p class="font-bold text-gray-800">50. Q: ก่อนจะเสกขึ้นโฮสติ้งเป็น Production จริงจัง โฟลเดอร์ลับ <code>dist/</code> จะโผล่ขี้นมา โฟลเดอร์นั้นมีไว้ทำไม?</p>
+                                    <p class="text-gray-600"><span class="font-semibold text-green-600">A:</span> มันย่อมาจาก Distribution ครับ! มาจากตอนที่เราพิมพ์ <code>npm run build</code> ระบบจะจับเอา <code>src</code> โค้ดทั้งหมดมาย่อยสลายความเวิ่นเว้อเหลือแต่ความเพอร์เพคที่เบาหวิว โกยทิ้งเป็นไฟล์ HTML/CSS/JS บริสุทธิ์ผุดผ่อง พร้อมนำไปวางที่เซิฟเวอร์แจกชาวบ้านแล้วครับ</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update sidebar active state
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.getElementById('nav-' + sectionId).classList.add('active');
+            
+            // Scroll to top of the content smoothly
+            document.querySelector('main').scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>
