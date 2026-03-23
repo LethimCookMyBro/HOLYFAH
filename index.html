@@ -64,23 +64,30 @@
 <body class="bg-gray-50 text-gray-800">
 
     <!-- Header -->
-    <header class="fixed top-0 w-full z-50 glass-panel border-b border-gray-200 shadow-sm h-16 flex items-center px-6">
-        <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
+    <header class="fixed top-0 w-full z-50 glass-panel border-b border-gray-200 shadow-sm h-16 flex items-center px-4 md:px-6">
+        <div class="flex items-center gap-2 md:gap-3">
+            <button onclick="toggleSidebar()" class="md:hidden p-2 -ml-2 text-gray-500 hover:text-blue-600 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+            <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold text-lg hidden sm:flex">
                 D
             </div>
-            <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-purple-600">
+            <h1 class="text-lg md:text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-purple-600 truncate">
                 DevBoard Documentation
             </h1>
         </div>
-        <div class="ml-auto flex items-center gap-4 text-sm text-gray-500 font-medium">
-            <span>คู่มือสำหรับการนำเสนอ (Presentation Guide)</span>
+        <div class="ml-auto flex items-center gap-4 text-xs md:text-sm text-gray-500 font-medium">
+            <span class="hidden sm:inline">คู่มือสำหรับการนำเสนอ (Presentation Guide)</span>
+            <span class="sm:hidden">Presentation</span>
         </div>
     </header>
 
-    <div class="flex h-screen pt-16">
+    <div class="flex h-screen pt-16 relative">
+        <!-- Sidebar Backdrop -->
+        <div id="sidebar-backdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-gray-900/50 z-30 opacity-0 pointer-events-none transition-opacity duration-300 md:hidden"></div>
+
         <!-- Sidebar Navigation -->
-        <aside class="w-72 fixed h-[calc(100vh-4rem)] overflow-y-auto border-r border-gray-200 bg-white shadow-sm pb-10">
+        <aside id="sidebar" class="w-72 fixed h-[calc(100vh-4rem)] overflow-y-auto border-r border-gray-200 bg-white shadow-sm pb-10 z-40 transition-transform duration-300 -translate-x-full md:translate-x-0">
             <div class="p-5 font-semibold text-xs tracking-wider text-gray-400 uppercase">บทนำและภาพรวม</div>
             <nav class="flex flex-col gap-1 px-3">
                 <button onclick="showSection('intro')" id="nav-intro" class="nav-link active text-left px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 transition-colors">1. ภาพรวมโปรเจกต์ (Intro)</button>
@@ -111,7 +118,7 @@
         </aside>
 
         <!-- Main Content Area -->
-        <main class="ml-72 flex-1 p-8 lg:p-12 h-full overflow-y-auto w-full bg-slate-50 relative pb-32">
+        <main class="md:ml-72 flex-1 p-4 md:p-8 lg:p-12 h-full overflow-y-auto w-full bg-slate-50 relative pb-32">
             <div class="max-w-4xl mx-auto">
                 
                 <!-- 1. Intro Section -->
@@ -955,6 +962,23 @@ function SearchPage() {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
     <script>
+        const sidebar = document.getElementById('sidebar');
+        const backdrop = document.getElementById('sidebar-backdrop');
+        let isSidebarOpen = false;
+
+        function toggleSidebar() {
+            isSidebarOpen = !isSidebarOpen;
+            if (isSidebarOpen) {
+                sidebar.classList.remove('-translate-x-full');
+                backdrop.classList.remove('opacity-0', 'pointer-events-none');
+                backdrop.classList.add('opacity-100', 'pointer-events-auto');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                backdrop.classList.remove('opacity-100', 'pointer-events-auto');
+                backdrop.classList.add('opacity-0', 'pointer-events-none');
+            }
+        }
+
         function showSection(sectionId) {
             // Hide all sections
             document.querySelectorAll('.content-section').forEach(section => {
@@ -969,8 +993,13 @@ function SearchPage() {
             });
             document.getElementById('nav-' + sectionId).classList.add('active');
             
+            // Close sidebar on mobile after selection
+            if (window.innerWidth < 768 && isSidebarOpen) {
+                toggleSidebar();
+            }
+
             // Scroll to top of the content smoothly
-            document.querySelector('main').scrollTo(0, 0);
+            document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
 </body>
