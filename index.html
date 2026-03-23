@@ -102,11 +102,12 @@
 
             <div class="p-5 font-semibold text-xs tracking-wider text-gray-400 uppercase mt-2">ส่วนติดต่อผู้ใช้ (Pages/Components)</div>
             <nav class="flex flex-col gap-1 px-3">
-                <button onclick="showSection('postlist')" id="nav-postlist" class="nav-link text-left px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 transition-colors">5. หน้าแสดงโพสต์ (PostList)</button>
-                <button onclick="showSection('navbar')" id="nav-navbar" class="nav-link text-left px-4 pl-8 py-2.5 rounded-md text-gray-500 hover:bg-gray-50 transition-colors text-sm">5.1 แถบเมนู (Navbar)</button>
-                <button onclick="showSection('post-components')" id="nav-post-components" class="nav-link text-left px-4 pl-8 py-2.5 rounded-md text-gray-500 hover:bg-gray-50 transition-colors text-sm">5.2 โพสต์ย่อย (PostCard)</button>
-                <button onclick="showSection('post-detail')" id="nav-post-detail" class="nav-link text-left px-4 pl-8 py-2.5 rounded-md text-gray-500 hover:bg-gray-50 transition-colors text-sm">5.3 หน้ารายละเอียด (Detail)</button>
-                <button onclick="showSection('favorites')" id="nav-favorites" class="nav-link text-left px-4 pl-8 py-2.5 rounded-md text-gray-500 hover:bg-gray-50 transition-colors text-sm">5.4 รายการโปรด (Favorites)</button>
+                <button onclick="showSection('homepage')" id="nav-homepage" class="nav-link text-left px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 transition-colors">5. หน้าแรกและฟอร์ม (HomePage)</button>
+                <button onclick="showSection('postlist')" id="nav-postlist" class="nav-link text-left px-4 pl-8 py-2.5 rounded-md text-gray-500 hover:bg-gray-50 transition-colors text-sm">5.1 หน้าแสดงโพสต์ (PostList)</button>
+                <button onclick="showSection('navbar')" id="nav-navbar" class="nav-link text-left px-4 pl-8 py-2.5 rounded-md text-gray-500 hover:bg-gray-50 transition-colors text-sm">5.2 แถบเมนู (Navbar)</button>
+                <button onclick="showSection('post-components')" id="nav-post-components" class="nav-link text-left px-4 pl-8 py-2.5 rounded-md text-gray-500 hover:bg-gray-50 transition-colors text-sm">5.3 โพสต์ย่อย (PostCard)</button>
+                <button onclick="showSection('post-detail')" id="nav-post-detail" class="nav-link text-left px-4 pl-8 py-2.5 rounded-md text-gray-500 hover:bg-gray-50 transition-colors text-sm">5.4 หน้ารายละเอียด (Detail)</button>
+                <button onclick="showSection('favorites')" id="nav-favorites" class="nav-link text-left px-4 pl-8 py-2.5 rounded-md text-gray-500 hover:bg-gray-50 transition-colors text-sm">5.5 รายการโปรด (Favorites)</button>
                 <button onclick="showSection('search')" id="nav-search" class="nav-link text-left px-4 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 transition-colors">6. ระบบค้นหา (SearchPage)</button>
             </nav>
 
@@ -301,7 +302,74 @@ export default useFetch;</code></pre>
                     </div>
                 </section>
 
-                <!-- 5. PostList Section -->
+                <!-- 5. HomePage Section -->
+                <section id="homepage" class="content-section">
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 mb-8">
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4 flex items-center gap-3">
+                            <span class="text-4xl">🏠</span> หน้าแรกและฟอร์ม (HomePage & AddPostForm)
+                        </h2>
+                        <div class="prose max-w-none text-gray-600 text-lg leading-relaxed mb-6">
+                            <p><strong>คำอธิบายสำหรับพรีเซนต์:</strong> "ที่หน้าแรกของเรา (HomePage) ผมได้รวมเอาส่วนสร้างโพสต์ใหม่ <code>&lt;AddPostForm /&gt;</code> และส่วนแสดงโพสต์ <code>&lt;PostList /&gt;</code> เข้าไว้ด้วยกันครับ ในฟอร์มเพิ่มโพสต์ เราใช้ <code>useState</code> เพื่อเก็บข้อความขณะผู้ใช้กำลังพิมพ์ พอผู้ใช้กด submit ก็จะอัปเดตข้อมูลขึ้นไปครับ"</p>
+                        </div>
+                        
+                        <h3 class="text-lg font-bold text-brand-600 bg-brand-50 inline-block px-3 py-1 rounded-md mb-2">📄 src/pages/HomePage.jsx</h3>
+                        <pre><code class="language-jsx">import PostList from "../components/PostList";
+import AddPostForm from "../components/AddPostForm";
+
+function HomePage() {
+  return (
+    &lt;div style={{ maxWidth: "700px", margin: "2rem auto", padding: "0 1rem" }}&gt;
+      {/* ฟอร์มสำหรับเพิ่มโพสต์ใหม่ */}
+      &lt;AddPostForm onAddPost={() =&gt; {}} /&gt;
+      {/* องค์ประกอบแสดงรายการโพสต์ทั้งหมด */}
+      &lt;PostList /&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default HomePage;</code></pre>
+
+                        <h3 class="text-lg font-bold text-brand-600 bg-brand-50 inline-block px-3 py-1 rounded-md mt-6 mb-2">📄 src/components/AddPostForm.jsx</h3>
+                        <pre><code class="language-jsx">import { useState } from "react";
+
+function AddPostForm({ onAddPost }) {
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+
+  function handleSubmit(e) {
+    e.preventDefault(); 
+    if (!title.trim() || !body.trim()) return;
+
+    onAddPost({ title, body });
+    setTitle("");
+    setBody("");
+  }
+
+  return (
+    &lt;form onSubmit={handleSubmit} style={{ /* ... styles ... */ }}&gt;
+      &lt;h3&gt;เพิ่มโพสต์ใหม่&lt;/h3&gt;
+      &lt;input
+        type="text"
+        placeholder="หัวข้อโพสต์"
+        value={title}
+        onChange={(e) =&gt; setTitle(e.target.value)}
+      /&gt;
+      &lt;textarea
+        placeholder="เนื้อหาโพสต์"
+        value={body}
+        onChange={(e) =&gt; setBody(e.target.value)}
+        rows={3}
+      /&gt;
+      &lt;button type="submit"&gt;โพสต์&lt;/button&gt;
+    &lt;/form&gt;
+  );
+}
+
+export default AddPostForm;</code></pre>
+                    </div>
+                </section>
+
+                <!-- 5.1 PostList Section -->
                 <section id="postlist" class="content-section">
                     <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 mb-8">
                         <h2 class="text-3xl font-bold text-gray-800 mb-4 flex items-center gap-3">
@@ -342,7 +410,7 @@ function PostList() {
     &lt;div&gt;
       {/* ส่วนหัว: ปุ่มรีโหลด */}
       &lt;div&gt;
-        &lt;h2&gt;โพสต์ล่าสุด&lt;/h2&gt;
+        &lt;h2&gt;โพสต์ล่าสุด {posts && `(${posts.length})`}&lt;/h2&gt;
         &lt;button onClick={() =&gt; { setCurrentPage(1); refetch(); }}&gt;
           🔄 โหลดใหม่
         &lt;/button&gt;
